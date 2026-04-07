@@ -14,7 +14,18 @@ const app = express();
 
 // ─── Core Middleware ───────────────────────────────────────────────────────────
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowed = [
+      "http://localhost:3000",
+      "https://devgauge.vercel.app"
+    ];
+
+    if (!origin || allowed.includes(origin) || origin.includes("vercel.app")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 app.use(express.json({ limit: '10kb' }));
